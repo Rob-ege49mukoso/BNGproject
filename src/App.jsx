@@ -14,7 +14,7 @@ import {
   Database,
   Globe,
   LayoutDashboard,
-  Menu,
+  Menu,MessageSquare,
   Plus,
   Rocket,
   Settings,
@@ -22,9 +22,11 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
+import ChatPage from './ChatPage';
 
 const navigation = [
   { id: 'overview', label: 'Vue générale', icon: LayoutDashboard },
+  { id: 'chat', label: 'Chat IA', icon: MessageSquare },
   { id: 'apis', label: 'Mes API', icon: Code2 },
   { id: 'agents', label: 'Agents IA', icon: Bot },
   { id: 'apps', label: 'Applications', icon: Boxes },
