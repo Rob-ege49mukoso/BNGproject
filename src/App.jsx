@@ -390,9 +390,8 @@ export default function App() {
             <ProjectsPage type={page} projects={projects} onCreate={() => openCreate(page)} onOpen={setSelectedProject} />
           ) : page === 'chat' ? (
             <ChatPage />
-       ) : (
-    <SettingsPage />
-)} />
+          ) : (
+            <SettingsPage />
           )}
           <footer className="app-footer"><span>Elema API <span className="footer-dot">•</span> Prototype v0.1</span><span>Conçu pour évoluer</span></footer>
         </div>
