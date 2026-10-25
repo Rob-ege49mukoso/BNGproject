@@ -136,6 +136,7 @@ function Sidebar({ page, setPage, open, close }) {
 
 function Header({ page, onMenu, onCreate }) {
   const titles = {
+    chat: 'Chat IA',
     overview: 'Vue générale',
     apis: 'Mes API',
     agents: 'Agents IA',
