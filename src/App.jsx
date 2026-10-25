@@ -22,7 +22,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import ChatPage from '/ChatPage';.
+import ChatPage from './ChatPage';
 
 const navigation = [
   { id: 'overview', label: 'Vue générale', icon: LayoutDashboard },
