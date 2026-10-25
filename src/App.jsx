@@ -22,7 +22,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import ChatPage from './ChatPage';
+import ChatPage from '/ChatPage';.
 
 const navigation = [
   { id: 'overview', label: 'Vue générale', icon: LayoutDashboard },
@@ -389,9 +389,9 @@ export default function App() {
           ) : page in projectConfig ? (
             <ProjectsPage type={page} projects={projects} onCreate={() => openCreate(page)} onOpen={setSelectedProject} />
           ) : page === 'chat' ? (
-  <ChatPage />
-) : (
-  <SettingsPage />
+            <ChatPage />
+       ) : (
+    <SettingsPage />
 )} />
           )}
           <footer className="app-footer"><span>Elema API <span className="footer-dot">•</span> Prototype v0.1</span><span>Conçu pour évoluer</span></footer>
