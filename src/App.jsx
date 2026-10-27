@@ -403,7 +403,28 @@ export default function App() {
     setModalOpen(false);
     setSelectedProject(project);
     setPage(data.type);
+  }  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Chargement de votre session Elema...</p>
+      </div>
+    );
   }
+
+  if (!supabase) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <p>
+          Configuration Supabase manquante. Vérifiez les variables
+          VITE_SUPABASE_URL et VITE_SUPABASE_PUBLISHABLE_KEY.
+        </p>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <AuthPage onAuthenticated={setSession} />;
+                                             }
 
   return (
     <div className="app-shell">
