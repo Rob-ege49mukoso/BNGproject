@@ -404,6 +404,7 @@ export default function App() {
     setSelectedProject(project);
     setPage(data.type);
   }  
+  
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
