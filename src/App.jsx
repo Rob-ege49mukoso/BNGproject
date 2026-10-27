@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';;
+import { useEffect, useState } from 'react';
 import {
   Activity,
   ArrowDownRight,
@@ -403,7 +403,8 @@ export default function App() {
     setModalOpen(false);
     setSelectedProject(project);
     setPage(data.type);
-  }  if (authLoading) {
+  }  
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p>Chargement de votre session Elema...</p>
