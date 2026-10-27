@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+.import { useEffect, useState } from 'react';;
 import {
   Activity,
   ArrowDownRight,
@@ -23,6 +23,8 @@ import {
   X,
 } from 'lucide-react';
 import ChatPage from './ChatPage';
+import AuthPage from './AuthPage';
+import { supabase } from './lib/supabase';
 
 const navigation = [
   { id: 'overview', label: 'Vue générale', icon: LayoutDashboard },
