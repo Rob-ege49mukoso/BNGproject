@@ -426,7 +426,8 @@ export default function App() {
 
   if (!session) {
     return <AuthPage onAuthenticated={setSession} />;
-                                             }
+                             
+  }
 
   return (
     <div className="app-shell">
