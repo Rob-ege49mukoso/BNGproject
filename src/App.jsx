@@ -358,6 +358,33 @@ function ProjectDetail({ project, onBack }) {
 }
 
 export default function App() {
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    if (!supabase) {
+      setAuthLoading(false);
+      return;
+    }
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        console.error('Erreur de session :', error.message);
+      }
+      setSession(data?.session ?? null);
+      setAuthLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+      setAuthLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const [page, setPage] = useState('overview');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState('apis');
