@@ -83,7 +83,7 @@ Chaque fournisseur expose une interface commune pour envoyer une requête et nor
 
 ### Interface src/ChatPage.jsx
 
-L’interface doit afficher le résultat, le fournisseur/modèle réellement utilisé, un message clair lorsque le secours a été activé, ainsi que les informations de quota retournées par le serveur. Le serveur reste l’autorité pour le calcul et l’application du quota.
+L’interface doit afficher le résultat, le nom du modèle réellement utilisé (avec son logo si disponible) et les informations de quota retournées par le serveur. Elle ne doit jamais afficher le nom du fournisseur. Après un basculement, elle affiche le modèle de secours qui a effectivement répondu. Le serveur reste l’autorité pour le calcul et l’application du quota.
 
 ### Migration SQL proposée
 
@@ -107,7 +107,7 @@ Le dépôt ne contient actuellement pas de dossier `supabase/` ; la structure ex
 - Des requêtes simultanées ne peuvent pas dépasser la limite.
 - Les erreurs d’authentification, de validation et de quota ne déclenchent pas de secours inapproprié.
 - Les limites actuelles des forfaits restent inchangées.
-- L’interface identifie correctement le modèle utilisé et le recours au secours.
+- L’interface affiche le nom du modèle réellement utilisé, sans exposer le fournisseur, y compris après un basculement.
 - Les erreurs de réservation, les interruptions et les réservations expirées sont gérées sans fuite permanente de quota.
 
 ## 9. Hors périmètre et garde-fous
