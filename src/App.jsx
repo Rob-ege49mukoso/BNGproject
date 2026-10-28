@@ -26,6 +26,11 @@ import {
 import ChatPage from './ChatPage';
 import AuthPage from './AuthPage';
 import { supabase } from './lib/supabase';
+import {
+  emptyProjects,
+  loadProjects,
+  saveProjectToSupabase,
+} from './lib/projectStorage';
 
 const navigation = [
   { id: 'overview', label: 'Vue générale', icon: LayoutDashboard },
@@ -390,6 +395,7 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState('apis');
   const [projects, setProjects] = useState(initialProjects);
+  const [projectLoadError, setProjectLoadError] = useState('');
   const [selectedProject, setSelectedProject] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
