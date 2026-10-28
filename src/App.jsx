@@ -365,6 +365,9 @@ function ProjectDetail({ project, onBack }) {
 
 export default function App() {
   const [session, setSession] = useState(null);
+  const [recoveryMode, setRecoveryMode] = useState(
+    () => typeof window !== 'undefined' && window.location.hash.includes('type=recovery')
+  );
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
@@ -383,7 +386,10 @@ export default function App() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setRecoveryMode(true);
+      }
       setSession(newSession);
       setAuthLoading(false);
     });
@@ -486,6 +492,16 @@ async function saveProject(data) {
           VITE_SUPABASE_URL et VITE_SUPABASE_PUBLISHABLE_KEY.
         </p>
       </div>
+    );
+  }
+
+  if (recoveryMode) {
+    return (
+      <AuthPage
+        recoveryMode
+        onAuthenticated={setSession}
+        onRecoveryComplete={() => setRecoveryMode(false)}
+      />
     );
   }
 

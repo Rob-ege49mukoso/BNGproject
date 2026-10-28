@@ -1,15 +1,16 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, Eye, EyeOff, Mail, Phone, ShieldCheck } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import './auth.css';
 
-export default function AuthPage({ onAuthenticated }) {
-  const [mode, setMode] = useState('login');
+export default function AuthPage({ onAuthenticated, recoveryMode = false, onRecoveryComplete }) {
+  const [mode, setMode] = useState(recoveryMode ? 'update-password' : 'login');
   const [method, setMethod] = useState('email');
   const [identifier, setIdentifier] = useState('');
   const [recoveryEmail, setRecoveryEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
@@ -17,6 +18,15 @@ export default function AuthPage({ onAuthenticated }) {
 
   const isSignup = mode === 'signup';
   const isReset = mode === 'reset';
+  const isUpdatePassword = mode === 'update-password';
+
+  useEffect(() => {
+    if (recoveryMode) {
+      setMode('update-password');
+      setNotice('');
+      setError('');
+    }
+  }, [recoveryMode]);
 
   function switchMode(nextMode) {
     setMode(nextMode);
@@ -33,6 +43,26 @@ export default function AuthPage({ onAuthenticated }) {
     try {
       if (!supabase) {
         throw new Error('Configuration Supabase absente. Vérifie les variables VITE_SUPABASE_URL et VITE_SUPABASE_PUBLISHABLE_KEY.');
+      }
+
+      if (isUpdatePassword) {
+        if (password !== confirmPassword) {
+          throw new Error('Les deux mots de passe ne correspondent pas.');
+        }
+
+        const { error: updateError } = await supabase.auth.updateUser({
+          password,
+        });
+        if (updateError) throw updateError;
+
+        const { error: signOutError } = await supabase.auth.signOut();
+        if (signOutError) console.warn('Déconnexion après récupération :', signOutError.message);
+        setPassword('');
+        setConfirmPassword('');
+        setMode('login');
+        setNotice('Mot de passe modifié. Tu peux maintenant te connecter.');
+        if (onRecoveryComplete) onRecoveryComplete();
+        return;
       }
 
       if (isReset) {
@@ -111,10 +141,12 @@ export default function AuthPage({ onAuthenticated }) {
             <ShieldCheck size={15} /> TON ESPACE ELEMA
           </span>
           <h1 id="auth-title">
-            {isReset ? 'Récupérer le compte' : isSignup ? 'Créer ton compte' : 'Bon retour'}
+            {isUpdatePassword ? 'Choisir un nouveau mot de passe' : isReset ? 'Récupérer le compte' : isSignup ? 'Créer ton compte' : 'Bon retour'}
           </h1>
           <p>
-            {isReset
+            {isUpdatePassword
+              ? 'Choisis un nouveau mot de passe pour sécuriser ton compte.'
+              : isReset
               ? 'Indique ton adresse e-mail pour recevoir les instructions.'
               : isSignup
                 ? 'Crée un compte pour retrouver tes projets.'
@@ -122,7 +154,7 @@ export default function AuthPage({ onAuthenticated }) {
           </p>
         </div>
 
-        {!isReset && (
+        {!isReset && !isUpdatePassword && (
           <div className="auth-mode-tabs">
             <button type="button" className={!isSignup ? 'active' : ''} onClick={() => switchMode('login')}>
               Connexion
@@ -133,16 +165,17 @@ export default function AuthPage({ onAuthenticated }) {
           </div>
         )}
 
-        <div className="auth-method-tabs">
+        {!isUpdatePassword && <div className="auth-method-tabs">
           <button type="button" className={method === 'email' ? 'active' : ''} onClick={() => { setMethod('email'); setNotice(''); setError(''); }}>
             <Mail size={16} /> E-mail
           </button>
           <button type="button" className={method === 'phone' ? 'active' : ''} onClick={() => { setMethod('phone'); setNotice(''); setError(''); }} disabled={isReset}>
             <Phone size={16} /> Téléphone
           </button>
-        </div>
+        </div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
+          {!isUpdatePassword && <>
           <label htmlFor="auth-identifier">
             {method === 'email' ? 'Adresse e-mail' : 'Numéro de téléphone'}
           </label>
@@ -173,15 +206,16 @@ export default function AuthPage({ onAuthenticated }) {
               </p>
             </>
           )}
+          </>}
 
           {!isReset && (
             <>
-              <label htmlFor="auth-password">Mot de passe</label>
+              <label htmlFor="auth-password">{isUpdatePassword ? 'Nouveau mot de passe' : 'Mot de passe'}</label>
               <div className="auth-password-wrap">
                 <input
                   id="auth-password"
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete={isSignup ? 'new-password' : 'current-password'}
+                  autoComplete={isSignup || isUpdatePassword ? 'new-password' : 'current-password'}
                   placeholder={isSignup ? 'Choisis un mot de passe' : 'Ton mot de passe'}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -197,10 +231,25 @@ export default function AuthPage({ onAuthenticated }) {
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
+              {isUpdatePassword && (
+                <>
+                  <label htmlFor="auth-confirm-password">Confirmer le nouveau mot de passe</label>
+                  <input
+                    id="auth-confirm-password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    placeholder="Répète le nouveau mot de passe"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    required
+                    minLength={6}
+                  />
+                </>
+              )}
             </>
           )}
 
-          {!isSignup && !isReset && method === 'email' && (
+          {!isSignup && !isReset && !isUpdatePassword && method === 'email' && (
             <button type="button" className="auth-forgot" onClick={() => switchMode('reset')}>
               Mot de passe oublié ?
             </button>
@@ -210,7 +259,7 @@ export default function AuthPage({ onAuthenticated }) {
           {notice && <p className="auth-message auth-success" role="status">{notice}</p>}
 
           <button className="auth-submit" type="submit" disabled={busy}>
-            {busy ? 'Patiente…' : isReset ? 'Envoyer les instructions' : isSignup ? 'Créer mon compte' : 'Se connecter'}
+            {busy ? 'Patiente…' : isUpdatePassword ? 'Enregistrer le nouveau mot de passe' : isReset ? 'Envoyer les instructions' : isSignup ? 'Créer mon compte' : 'Se connecter'}
           </button>
         </form>
 
