@@ -498,7 +498,7 @@ async function saveProject(data) {
       <Sidebar page={page} setPage={setPage} open={menuOpen} close={() => setMenuOpen(false)} />
       <main className="main-area">
         <Header page={page} onMenu={() => setMenuOpen(true)} onCreate={() => openCreate()} />
-        <div className="page-content"> .
+        <div className="page-content"> 
          {projectLoadError && (
            <div
              role="alert"
