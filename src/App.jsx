@@ -498,7 +498,16 @@ async function saveProject(data) {
       <Sidebar page={page} setPage={setPage} open={menuOpen} close={() => setMenuOpen(false)} />
       <main className="main-area">
         <Header page={page} onMenu={() => setMenuOpen(true)} onCreate={() => openCreate()} />
-        <div className="page-content">
+        <div className="page-content"> .
+         {projectLoadError && (
+           <div
+             role="alert"
+             className="mb-4 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800"
+           >
+              {projectLoadError}
+           </div>
+         )}
+          
           {selectedProject ? (
             <ProjectDetail project={selectedProject} onBack={() => setSelectedProject(null)} />
           ) : page === 'overview' ? (
