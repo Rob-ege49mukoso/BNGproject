@@ -441,23 +441,44 @@ export default function App() {
   }, [session?.user?.id]);
 
 
-  function saveProject(data) {
-    const project = { ...data, id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}` };
-    setProjects((current) => ({ ...current, [data.type]: [...current[data.type], project] }));
-    setModalOpen(false);
-    setSelectedProject(project);
-    setPage(data.type);
-  }  
   
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Chargement de votre session Elema...</p>
-      </div>
+async function saveProject(data) {
+  if (!session?.user?.id) {
+    setProjectLoadError(
+      "Connecte-toi pour enregistrer un projet."
     );
+    return;
   }
 
-  if (!supabase) {
+  try {
+    setProjectLoadError("");
+
+    const savedProject = await saveProjectToSupabase(
+      supabase,
+      data,
+      session.user.id
+    );
+
+    setProjects((current) => ({
+      ...current,
+      [data.type]: [
+        savedProject,
+        ...current[data.type],
+      ],
+    }));
+
+    setModalOpen(false);
+    setSelectedProject(savedProject);
+    setPage(data.type);
+  } catch (error) {
+    setProjectLoadError(
+      error.message ||
+        "Impossible d'enregistrer le projet."
+    );
+  }
+}
+  
+ if (!supabase) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <p>
