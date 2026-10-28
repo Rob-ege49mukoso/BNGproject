@@ -403,6 +403,43 @@ export default function App() {
     setModalType(type || (page in projectConfig ? page : 'apis'));
     setModalOpen(true);
   }
+  
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchProjects() {
+      setProjectLoadError('');
+
+      if (!session?.user?.id) {
+        setProjects(emptyProjects());
+        return;
+      }
+
+      try {
+        const loadedProjects = await loadProjects(
+          supabase,
+          session.user.id
+        );
+
+        if (!cancelled) {
+          setProjects(loadedProjects);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setProjectLoadError(
+            error.message || 'Impossible de charger les projets.'
+          );
+        }
+      }
+    }
+
+    fetchProjects();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user?.id]);
+
 
   function saveProject(data) {
     const project = { ...data, id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}` };
