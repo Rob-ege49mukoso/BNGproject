@@ -13,8 +13,8 @@ export default function ChatPage() {
   const [session, setSession] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [provider, setProvider] = useState('groq');
   const [model, setModel] = useState('llama-3.3-70b-versatile');
+  const provider = model === 'gemini-2.5-flash' ? 'gemini' : 'groq';
   const [prompt, setPrompt] = useState('');
   const [messages, setMessages] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -90,6 +90,7 @@ export default function ChatPage() {
           content:
             data?.answer || 'Aucune réponse reçue du service IA.',
           quota: data?.quota,
+          model: data?.model || model,
         },
       ]);
     } catch (error) {
@@ -169,32 +170,11 @@ export default function ChatPage() {
         <>
           <div className="ai-controls">
             <label>
-              Fournisseur
-              <select
-                value={provider}
-                onChange={(event) => {
-                  const next = event.target.value;
-                  setProvider(next);
-                  setModel(
-                    next === 'groq'
-                      ? 'llama-3.3-70b-versatile'
-                      : 'gemini-2.5-flash'
-                  );
-                }}
-              >
-                <option value="groq">Groq</option>
-                <option value="gemini">Google Gemini</option>
+              Modèle IA
+              <select value={model} onChange={(event) => setModel(event.target.value)}>
+                <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
               </select>
-            </label>
-
-            <label>
-              Identifiant du modèle
-              <input
-                value={model}
-                onChange={(event) => setModel(event.target.value)}
-                maxLength={120}
-                required
-              />
             </label>
           </div>
 
@@ -204,7 +184,7 @@ export default function ChatPage() {
                 <Bot size={27} />
                 <strong>Que veux-tu demander à Elema ?</strong>
                 <p>
-                  Choisis ton fournisseur et écris ton premier message.
+                  Choisis ton modèle et écris ton premier message.
                 </p>
               </div>
             )}
@@ -218,6 +198,12 @@ export default function ChatPage() {
                   {message.role === 'user' ? 'Toi' : 'Elema IA'}
                 </strong>
                 <p>{message.content}</p>
+
+                {message.role === 'assistant' && message.model && (
+                  <small className="ai-model-label">
+                    <Bot size={13} /> {message.model}
+                  </small>
+                )}
 
                 {message.quota && (
                   <small>
