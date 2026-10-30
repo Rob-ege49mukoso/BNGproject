@@ -1,8 +1,9 @@
 
+
 import { useState } from "react";
 import {
   Activity, Bot, ChevronRight, Code2, Command, FolderKanban,
-  LayoutDashboard, Menu, MessageSquare, Moon, Plus, Send,
+  LayoutDashboard, LogOut, Menu, MessageSquare, Moon, Plus, Send,
   Settings2, Sparkles, Sun, X
 } from "lucide-react";
 import "./app.css";
@@ -15,7 +16,7 @@ const navItems = [
   { label: "Chat IA", icon: MessageSquare }
 ];
 
-export default function App() {
+export default function App({ onSignOut }) {
   const [theme, setTheme] = useState("dark");
   const [active, setActive] = useState("Vue d'ensemble");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -87,6 +88,10 @@ export default function App() {
           <button className="nav-item"
             onClick={() => setActive("Paramètres")}>
             <Settings2 size={19} /><span>Paramètres</span>
+          </button>
+          <button className="nav-item" type="button"
+            onClick={onSignOut}>
+            <LogOut size={19} /><span>Se déconnecter</span>
           </button>
           <div className="profile">
             <span className="profile-avatar">E</span>
@@ -266,4 +271,5 @@ export default function App() {
       </main>
     </div>
   );
-}
+                }
+                  
