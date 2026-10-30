@@ -55,6 +55,14 @@ export default function AuthGate() {
     };
   }, []);
 
+  const handleSignOut = async () => {
+    const { error: signOutError } = await supabase.auth.signOut();
+
+    if (signOutError) {
+      setError(signOutError.message);
+    }
+  };
+
   if (loading) {
     return (
       <div style={{
@@ -93,5 +101,7 @@ export default function AuthGate() {
     );
   }
 
-  return session ? <App /> : <AuthPage />;
-}
+  return session
+    ? <App onSignOut={handleSignOut} />
+    : <AuthPage />;
+    }
