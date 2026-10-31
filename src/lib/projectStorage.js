@@ -128,6 +128,7 @@ export async function createProject(project) {
   const config = project.config || {};
 
   let payload;
+  let data;
 
   if (type === "api") {
   const baseSlug = generateSlug(name);
@@ -169,7 +170,6 @@ export async function createProject(project) {
 
   if (!created) {
     throw new Error("Impossible de générer un slug unique.");
-  }
   }
   
   } else if (type === "agent") {
