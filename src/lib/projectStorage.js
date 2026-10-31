@@ -1,5 +1,4 @@
 
-
 import { supabase } from "./supabase";
 
 const TABLES = {
