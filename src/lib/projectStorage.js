@@ -130,15 +130,48 @@ export async function createProject(project) {
   let payload;
 
   if (type === "api") {
-    payload = {
-      user_id: user.id,
-      name,
-      description,
-      method: config.method || "GET",
-      route: config.route || "/",
-      response_json: config.response_json || {},
-      is_published: false,
-    };
+  const baseSlug = generateSlug(name);
+  let created = false;
+
+  for (let attempt = 1; attempt <= 100; attempt++) {
+    const slug = attempt === 1
+      ? baseSlug
+      : `${baseSlug}-${attempt}`;
+
+    const { data: apiData, error } = await supabase
+      .from(TABLES.api)
+      .insert({
+        user_id: user.id,
+        name,
+        slug,
+        description,
+        method: config.method || "GET",
+        route: config.route || "/",
+        response_json: config.response_json || {},
+        is_published: false,
+      })
+      .select()
+      .single();
+
+    if (!error) {
+      data = apiData;
+      created = true;
+      break;
+    }
+
+    if (
+      error.code !== "23505" ||
+      !error.message?.includes("api_projects_user_id_slug_key")
+    ) {
+      throw error;
+    }
+  }
+
+  if (!created) {
+    throw new Error("Impossible de générer un slug unique.");
+  }
+  }
+  
   } else if (type === "agent") {
     payload = {
       user_id: user.id,
