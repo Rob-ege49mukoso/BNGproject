@@ -1131,4 +1131,6 @@ h1 > span,
 @media (max-width: 1100px) {
   .sidebar {
     width: 215px;
-    padding-inline: 12p
+    padding-inline: 12px;
+  }
+}
