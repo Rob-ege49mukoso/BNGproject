@@ -1,11 +1,12 @@
 
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Activity, Bot, ChevronRight, Code2, Command, FolderKanban,
   LayoutDashboard, LogOut, Menu, MessageSquare, Moon, Plus, Send,
   Settings2, Sparkles, Sun, X
 } from "lucide-react";
+import { getProjects } from "./lib/projectStorage.js";
 import "./app.css";
 
 const navItems = [
@@ -24,6 +25,50 @@ export default function App({ onSignOut }) {
   const [messages, setMessages] = useState([]);
   const [notice, setNotice] = useState("");
 
+  // Données réelles des projets
+  const [projects, setProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [projectsError, setProjectsError] = useState("");
+
+  useEffect(() => {
+    let activeRequest = true;
+
+    async function loadProjects() {
+      try {
+        setLoadingProjects(true);
+        setProjectsError("");
+
+        const data = await getProjects();
+
+        if (activeRequest) {
+          setProjects(data || []);
+        }
+      } catch (error) {
+        if (activeRequest) {
+          setProjectsError(
+            error.message || "Impossible de charger les projets."
+          );
+        }
+      } finally {
+        if (activeRequest) {
+          setLoadingProjects(false);
+        }
+      }
+    }
+
+    loadProjects();
+
+    return () => {
+      activeRequest = false;
+    };
+  }, []);
+
+  const apiProjects = projects.filter(project => project.type === "api");
+  const aiAgents = projects.filter(project => project.type === "agent");
+  const appProjects = projects.filter(
+    project => project.type === "application"
+  );
+
   function sendMessage() {
     const text = prompt.trim();
     if (!text) return;
@@ -39,6 +84,14 @@ export default function App({ onSignOut }) {
   }
 
   const isChat = active === "Chat IA";
+
+  const displayedProjects = active === "API"
+    ? apiProjects
+    : active === "Agents IA"
+      ? aiAgents
+      : active === "Applications"
+        ? appProjects
+        : projects;
 
   return (
     <div className="elema-app" data-theme={theme}>
@@ -222,12 +275,18 @@ export default function App({ onSignOut }) {
                   <p>Tout est prêt pour commencer.</p></div>
               </section>
 
+              {projectsError && (
+                <p className="chat-notice" role="alert">
+                  Erreur de chargement : {projectsError}
+                </p>
+              )}
+
               <section className="stats-grid">
                 {[
-                  { title: "Projets", value: "0", detail: "Commence ton premier projet", icon: FolderKanban, color: "blue" },
-                  { title: "API créées", value: "0", detail: "Construis tes API", icon: Code2, color: "teal" },
-                  { title: "Agents IA", value: "0", detail: "Donne vie à tes idées", icon: Bot, color: "violet" },
-                  { title: "Activité", value: "Prêt", detail: "Interface initialisée", icon: Activity, color: "amber" }
+                  { title: "Projets", value: loadingProjects ? "…" : String(projects.length), detail: "Projets enregistrés", icon: FolderKanban, color: "blue" },
+                  { title: "API créées", value: loadingProjects ? "…" : String(apiProjects.length), detail: "API enregistrées", icon: Code2, color: "teal" },
+                  { title: "Agents IA", value: loadingProjects ? "…" : String(aiAgents.length), detail: "Agents enregistrés", icon: Bot, color: "violet" },
+                  { title: "Applications", value: loadingProjects ? "…" : String(appProjects.length), detail: "Applications enregistrées", icon: Activity, color: "amber" }
                 ].map(({ title, value, detail, icon: Icon, color }) => (
                   <article className="stat-card" key={title}>
                     <span className={`stat-icon stat-${color}`}><Icon size={20} /></span>
@@ -238,29 +297,52 @@ export default function App({ onSignOut }) {
               </section>
 
               <section className="section-heading projects-heading">
-                <div><h2>Explore les possibilités</h2>
-                  <p>Choisis ce que tu veux construire.</p></div>
+                <div><h2>{active === "Vue d'ensemble" ? "Tes projets récents" : active}</h2>
+                  <p>Les projets enregistrés dans ton espace.</p></div>
                 <button className="text-button"
                   onClick={() => setActive("Mes projets")}>
                   Voir les projets <ChevronRight size={16} />
                 </button>
               </section>
 
-              <section className="projects-grid">
-                {[
-                  { name: "Mon premier projet", type: "API REST", icon: Code2, color: "blue" },
-                  { name: "Assistant intelligent", type: "Agent IA", icon: Bot, color: "teal" },
-                  { name: "Application web", type: "Application", icon: LayoutDashboard, color: "violet" }
-                ].map(({ name, type, icon: Icon, color }) => (
-                  <button className="project-card" key={name}
-                    onClick={() => setActive(type === "Agent IA" ? "Agents IA" : "Mes projets")}>
-                    <span className={`project-icon project-${color}`}><Icon size={22} /></span>
-                    <span className="project-title">{name}</span>
-                    <span className="project-type">{type}</span>
-                    <span className="project-footer">En préparation <ChevronRight size={17} /></span>
-                  </button>
-                ))}
-              </section>
+              {loadingProjects ? (
+                <p>Chargement de tes projets...</p>
+              ) : (
+                <section className="projects-grid">
+                  {displayedProjects.length > 0 ? (
+                    displayedProjects.map(project => {
+                      const Icon = project.type === "api"
+                        ? Code2
+                        : project.type === "agent"
+                          ? Bot
+                          : LayoutDashboard;
+
+                      return (
+                        <button className="project-card" key={project.id}
+                          onClick={() => setActive(
+                            project.type === "api"
+                              ? "API"
+                              : project.type === "agent"
+                                ? "Agents IA"
+                                : "Mes projets"
+                          )}>
+                          <span className={`project-icon project-${project.type === "api" ? "blue" : project.type === "agent" ? "teal" : "violet"}`}>
+                            <Icon size={22} />
+                          </span>
+                          <span className="project-title">{project.name}</span>
+                          <span className="project-type">{project.type}</span>
+                          <span className="project-footer">
+                            {project.status || "En préparation"}
+                            <ChevronRight size={17} />
+                          </span>
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <p>Aucun projet enregistré pour le moment.</p>
+                  )}
+                </section>
+              )}
             </>
           )}
           <footer className="page-footer">
@@ -271,5 +353,5 @@ export default function App({ onSignOut }) {
       </main>
     </div>
   );
-                }
-                  
+      }
+            
