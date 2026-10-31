@@ -1,4 +1,5 @@
 
+
 import { supabase } from "./supabase";
 
 const TABLES = {
@@ -40,13 +41,15 @@ function normalizeType(type) {
 }
 
 function generateSlug(value) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "api";
+  return (
+    value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "api"
+  );
 }
 
 /**
@@ -88,7 +91,7 @@ function normalizeProject(row, type) {
  */
 export async function getProjects() {
   const user = await getCurrentUser();
-const {data, type}= await findProjectrecord(projectid, user.id)
+
   const results = await Promise.all(
     PROJECT_TYPES.map(async (type) => {
       const { data, error } = await supabase
@@ -131,94 +134,6 @@ export async function createProject(project) {
   let data;
 
   if (type === "api") {
-  const baseSlug = generateSlug(name);
-  let created = false;
-
-  for (let attempt = 1; attempt <= 100; attempt++) {
-    const slug = attempt === 1
-      ? baseSlug
-      : `${baseSlug}-${attempt}`;
-
-    const { data: apiData, error } = await supabase
-      .from(TABLES.api)
-      .insert({
-        user_id: user.id,
-        name,
-        slug,
-        description,
-        method: config.method || "GET",
-        route: config.route || "/",
-        response_json: config.response_json || {},
-        is_published: false,
-      })
-      .select()
-      .single();
-
-    if (!error) {
-      data = apiData;
-      created = true;
-      break;
-    }
-
-    if (
-      error.code !== "23505" ||
-      !error.message?.includes("api_projects_user_id_slug_key")
-    ) {
-      throw error;
-    }
-  }
-
-  if (!created) {
-    throw new Error("Impossible de générer un slug unique.");
-
-    
-/**
- * Récupère les projets de l'utilisateur dans les trois tables.
- */
-export async function getProjects() {
-  const user = await getCurrentUser();
-
-  const results = await Promise.all(
-    PROJECT_TYPES.map(async (type) => {
-      const { data, error } = await supabase
-        .from(TABLES[type])
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      return (data || []).map((row) => normalizeProject(row, type));
-    })
-  );
-
-  return results
-    .flat()
-    .sort(
-      (a, b) =>
-        new Date(b.created_at || 0).getTime() -
-        new Date(a.created_at || 0).getTime()
-    );
-}
-
-/**
- * Crée un projet dans la table correspondant à son type.
- */
-export async function createProject(project) {
-  const user = await getCurrentUser();
-
-  if (!project?.name?.trim()) {
-    throw new Error("Le nom du projet est obligatoire.");
-  }
-
-  const type = normalizeType(project.type);
-  const name = project.name.trim();
-  const description = project.description || "";
-  const config = project.config || {};
-
-  let data;
-
-  if (type === "api") {
     const baseSlug = generateSlug(name);
     let created = false;
 
@@ -258,25 +173,26 @@ export async function createProject(project) {
     if (!created) {
       throw new Error("Impossible de générer un slug unique.");
     }
+  } else if (type === "agent") {
+    payload = {
+      user_id: user.id,
+      name,
+      description,
+      instructions: project.instructions || "",
+      model: project.model || "gemini-2.5-flash",
+      config,
+    };
   } else {
-    const payload =
-      type === "agent"
-        ? {
-            user_id: user.id,
-            name,
-            description,
-            instructions: project.instructions || "",
-            model: project.model || "gemini-2.5-flash",
-            config,
-          }
-        : {
-            user_id: user.id,
-            name,
-            description,
-            specification: config,
-            status: "draft",
-          };
+    payload = {
+      user_id: user.id,
+      name,
+      description,
+      specification: config,
+      status: "draft",
+    };
+  }
 
+  if (type !== "api") {
     const { data: result, error } = await supabase
       .from(TABLES[type])
       .insert(payload)
@@ -289,8 +205,7 @@ export async function createProject(project) {
   }
 
   return normalizeProject(data, type);
-  }
-              
+}
 
 /**
  * Recherche un projet dans les trois tables.
@@ -430,4 +345,5 @@ export async function getProjectById(projectId) {
   const { data, type } = await findProjectRecord(projectId, user.id);
 
   return normalizeProject(data, type);
-        }
+      }
+  
