@@ -88,7 +88,7 @@ function normalizeProject(row, type) {
  */
 export async function getProjects() {
   const user = await getCurrentUser();
-
+const {data, type}= await findProjectrecord(projectid, user.id)
   const results = await Promise.all(
     PROJECT_TYPES.map(async (type) => {
       const { data, error } = await supabase
@@ -191,13 +191,17 @@ export async function createProject(project) {
     };
   }
 
-  const { data, error } = await supabase
+  if (type !== "api") {
+  const { data: result, error } = await supabase
     .from(TABLES[type])
     .insert(payload)
     .select()
     .single();
 
   if (error) throw error;
+
+  data = result;
+  }
 
   return normalizeProject(data, type);
 }
