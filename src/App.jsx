@@ -14,6 +14,7 @@ const navItems = [
   { label: "Mes projets", icon: FolderKanban },
   { label: "API", icon: Code2 },
   { label: "Agents IA", icon: Bot },
+  { label: "Applications", icon: Activity },
   { label: "Chat IA", icon: MessageSquare }
 ];
 
