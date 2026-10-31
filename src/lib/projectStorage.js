@@ -170,40 +170,34 @@ export async function createProject(project) {
 
   if (!created) {
     throw new Error("Impossible de générer un slug unique.");
-  }
-  
-  } else if (type === "agent") {
-    payload = {
-      user_id: user.id,
-      name,
-      description,
-      instructions: project.instructions || "",
-      model: project.model || "gemini-2.5-flash",
-      config,
-    };
-  } else {
-    payload = {
-      user_id: user.id,
-      name,
-      description,
-      specification: config,
-      status: "draft",
-    };
-  }
 
-  if (type !== "api") {
-  const { data: result, error } = await supabase
-    .from(TABLES[type])
-    .insert(payload)
-    .select()
-    .single();
+    /**
+ * Récupère les projets de l'utilisateur dans les trois tables.
+ */
+export async function getProjects() {
+  const user = await getCurrentUser();
 
-  if (error) throw error;
+  const results = await Promise.all(
+    PROJECT_TYPES.map(async (type) => {
+      const { data, error } = await supabase
+        .from(TABLES[type])
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
 
-  data = result;
-  }
+      if (error) throw error;
 
-  return normalizeProject(data, type);
+      return (data || []).map((row) => normalizeProject(row, type));
+    })
+  );
+
+  return results
+    .flat()
+    .sort(
+      (a, b) =>
+        new Date(b.created_at || 0).getTime() -
+        new Date(a.created_at || 0).getTime()
+    );
 }
 
 /**
