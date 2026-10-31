@@ -344,5 +344,5 @@ export async function getProjectById(projectId) {
   const { data, type } = await findProjectRecord(projectId, user.id);
 
   return normalizeProject(data, type);
-      }
+}
   
