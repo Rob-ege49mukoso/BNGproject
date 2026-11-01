@@ -228,6 +228,63 @@ const [savingProject, setSavingProject] = useState(false);
         </header>
 
         <div className="page-content">
+          {showCreateForm && (
+  <section className="create-project-panel">
+    <div className="section-heading">
+      <div>
+        <span className="eyebrow">NOUVEAU PROJET</span>
+        <h2>Donnez vie à votre idée</h2>
+        <p>Décrivez ce que vous souhaitez construire.</p>
+      </div>
+
+      <button
+        className="icon-button"
+        onClick={() => setShowCreateForm(false)}
+      >
+        <X size={20} />
+      </button>
+    </div>
+
+    <form onSubmit={handleCreateProject}>
+      <label>Nom du projet (facultatif)</label>
+      <input
+        value={projectName}
+        onChange={e => setProjectName(e.target.value)}
+        placeholder="Ex. Mon application..."
+      />
+
+      <label>Description du projet</label>
+      <textarea
+        value={projectDescription}
+        onChange={e => setProjectDescription(e.target.value)}
+        placeholder="Décrivez ce que vous voulez créer..."
+        required
+      />
+
+      {active === "Mes projets" && (
+        <>
+          <label>Type de projet</label>
+          <select
+            value={projectType}
+            onChange={e => setProjectType(e.target.value)}
+          >
+            <option value="api">API</option>
+            <option value="agent">Agent IA</option>
+            <option value="application">Application</option>
+          </select>
+        </>
+      )}
+
+      {projectsError && (
+        <p className="error-message">{projectsError}</p>
+      )}
+
+      <button type="submit" disabled={savingProject}>
+        {savingProject ? "Création..." : "Créer mon projet"}
+      </button>
+    </form>
+  </section>
+)}
           {isChat ? (
             <section className="chat-page">
               <div className="eyebrow"><Sparkles size={15} /> ELEMA INTELLIGENCE</div>
