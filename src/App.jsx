@@ -136,6 +136,31 @@ const [savingProject, setSavingProject] = useState(false);
     setSavingProject(false);
   }
   }
+  
+  async function handleDeleteProject(project) {
+  const confirmed = window.confirm(
+    `Voulez-vous vraiment supprimer "${project.name}" ? Cette action est irréversible.`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setProjectsError("");
+
+    await deleteProject(project.id);
+
+    setProjects(previous =>
+      previous.filter(item => item.id !== project.id)
+    );
+
+    setNotice("Projet supprimé avec succès.");
+  } catch (error) {
+    setProjectsError(
+      error.message || "Impossible de supprimer ce projet."
+    );
+  }
+  }
+  
   const isChat = active === "Chat IA";
 
   const displayedProjects = active === "API"
