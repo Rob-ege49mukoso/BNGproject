@@ -132,7 +132,7 @@ const [savingProject, setSavingProject] = useState(false);
   } finally {
     setSavingProject(false);
   }
-  
+  }
   const isChat = active === "Chat IA";
 
   const displayedProjects = active === "API"
