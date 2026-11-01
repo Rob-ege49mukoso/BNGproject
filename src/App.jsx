@@ -417,6 +417,56 @@ const [savingProject, setSavingProject] = useState(false);
         ))}
       </div>
     )}
+         </section>
+) : active === "Agents IA" ? (
+  <section className="workspace-dashboard">
+    <div className="eyebrow">
+      <Bot size={16} /> ESPACE AGENTS IA
+    </div>
+
+    <h1>Crée tes <span>agents intelligents</span></h1>
+
+    <p className="welcome-description">
+      Configure des assistants IA adaptés à tes besoins.
+    </p>
+
+    <button
+      className="primary-button"
+      onClick={() => setShowCreateForm(true)}
+    >
+      <Plus size={18} /> Créer un agent
+    </button>
+
+    <section className="section-heading">
+      <div>
+        <h2>Mes agents IA</h2>
+        <p>Tes assistants enregistrés.</p>
+      </div>
+    </section>
+
+    {loadingProjects ? (
+      <p>Chargement...</p>
+    ) : aiAgents.length === 0 ? (
+      <p>Aucun agent créé pour le moment.</p>
+    ) : (
+      <div className="projects-grid">
+        {aiAgents.map(project => (
+          <article className="project-card" key={project.id}>
+            <Bot size={22} />
+            <h3>{project.name}</h3>
+            <p>{project.description}</p>
+            <span>{project.model || "Modèle IA"}</span>
+
+            <button
+              type="button"
+              onClick={() => handleDeleteProject(project)}
+            >
+              Supprimer
+            </button>
+          </article>
+        ))}
+      </div>
+    )}
   </section>
 ) : (
   <>
