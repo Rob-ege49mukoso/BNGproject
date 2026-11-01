@@ -130,10 +130,15 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
     setProjectsError("");
 
     const createdProject = await createProject({
-      name: suggestedName,
-      description,
-      type
-    });
+  name: suggestedName,
+  description,
+  type,
+  config: type === "api" ? {
+    method: apiMethod,
+    route: apiRoute.trim() || "/",
+    response_json: parsedResponseJson
+  } : {}
+});
 
     setProjects(previous => [createdProject, ...previous]);
 
