@@ -325,7 +325,7 @@ export default function App({ onSignOut }) {
                               : project.type === "agent"
                                 ? "Agents IA"
                                 : "Applications"
-                          )}
+                          )}>
                           <span className={`project-icon project-${project.type === "api" ? "blue" : project.type === "agent" ? "teal" : "violet"}`}>
                             <Icon size={22} />
                           </span>
