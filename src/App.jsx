@@ -39,6 +39,9 @@ const [projectName, setProjectName] = useState("");
 const [projectDescription, setProjectDescription] = useState("");
 const [projectType, setProjectType] = useState("api");
 const [savingProject, setSavingProject] = useState(false);
+const [apiMethod, setApiMethod] = useState("GET");
+const [apiRoute, setApiRoute] = useState("/");
+const [apiResponseJson, setApiResponseJson] = useState("{}");
   useEffect(() => {
     let activeRequest = true;
 
