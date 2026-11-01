@@ -306,6 +306,37 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
         </>
       )}
 
+              {(active === "API" ||
+        (active === "Mes projets" && projectType === "api")) && (
+        <>
+          <label>Méthode HTTP</label>
+          <select
+            value={apiMethod}
+            onChange={e => setApiMethod(e.target.value)}
+          >
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+
+          <label>Route de l'API</label>
+          <input
+            value={apiRoute}
+            onChange={e => setApiRoute(e.target.value)}
+            placeholder="/"
+          />
+
+          <label>Réponse JSON</label>
+          <textarea
+            value={apiResponseJson}
+            onChange={e => setApiResponseJson(e.target.value)}
+            placeholder="{}"
+          />
+        </>
+      )}
+      
       {projectsError && (
         <p className="error-message">{projectsError}</p>
       )}
