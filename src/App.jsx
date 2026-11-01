@@ -5,7 +5,7 @@ import {
   LayoutDashboard, LogOut, Menu, MessageSquare, Moon, Plus, Send,
   Settings2, Sparkles, Sun, X
 } from "lucide-react";
-import { getProjects } from "./lib/projectStorage.js";
+import { getProjects, createProject } from "./lib/projectStorage.js";
 import "./app.css";
 
 const navItems = [
