@@ -10,6 +10,7 @@ import {
   createProject,
   deleteProject
 } from "./lib/projectStorage.js";
+ import "./app.css";
 
 const navItems = [
   { label: "Vue d'ensemble", icon: LayoutDashboard },
