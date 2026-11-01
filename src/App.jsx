@@ -467,6 +467,56 @@ const [savingProject, setSavingProject] = useState(false);
         ))}
       </div>
     )}
+         </section>
+) : active === "Applications" ? (
+  <section className="workspace-dashboard">
+    <div className="eyebrow">
+      <Activity size={16} /> ESPACE APPLICATIONS
+    </div>
+
+    <h1>Crée tes <span>applications</span></h1>
+
+    <p className="welcome-description">
+      Imagine, construis et organise tes applications.
+    </p>
+
+    <button
+      className="primary-button"
+      onClick={() => setShowCreateForm(true)}
+    >
+      <Plus size={18} /> Créer une application
+    </button>
+
+    <section className="section-heading">
+      <div>
+        <h2>Mes applications</h2>
+        <p>Tes applications enregistrées.</p>
+      </div>
+    </section>
+
+    {loadingProjects ? (
+      <p>Chargement...</p>
+    ) : appProjects.length === 0 ? (
+      <p>Aucune application créée pour le moment.</p>
+    ) : (
+      <div className="projects-grid">
+        {appProjects.map(project => (
+          <article className="project-card" key={project.id}>
+            <Activity size={22} />
+            <h3>{project.name}</h3>
+            <p>{project.description}</p>
+            <span>{project.status || "Brouillon"}</span>
+
+            <button
+              type="button"
+              onClick={() => handleDeleteProject(project)}
+            >
+              Supprimer
+            </button>
+          </article>
+        ))}
+      </div>
+    )}
   </section>
 ) : (
   <>
