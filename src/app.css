@@ -1134,3 +1134,114 @@ h1 > span,
     padding-inline: 12px;
   }
 }
+
+/* ---------- FORMULAIRE DE CRÉATION ---------- */
+
+.create-project-panel {
+  width: 100%;
+  max-width: 850px;
+  margin: 24px auto;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  box-shadow: var(--shadow), 0 0 25px var(--glow);
+  animation: formAppear 0.4s ease both;
+}
+
+.create-project-panel .section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.create-project-panel h2 {
+  color: var(--text);
+  margin: 8px 0;
+  font-size: 1.7rem;
+}
+
+.create-project-panel p {
+  color: var(--muted);
+}
+
+.create-project-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.create-project-panel label {
+  color: var(--text);
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.create-project-panel input,
+.create-project-panel textarea,
+.create-project-panel select {
+  width: 100%;
+  padding: 14px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+}
+
+.create-project-panel textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.create-project-panel input:focus,
+.create-project-panel textarea:focus,
+.create-project-panel select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--glow);
+}
+
+.create-project-panel form button[type="submit"] {
+  margin-top: 16px;
+  padding: 15px;
+  color: #08120d;
+  font-weight: 700;
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.create-project-panel form button[type="submit"]:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.error-message {
+  color: #ff647c;
+  font-size: 0.9rem;
+}
+
+@keyframes formAppear {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .create-project-panel {
+    padding: 18px;
+    margin: 12px auto;
+  }
+
+  .create-project-panel h2 {
+    font-size: 1.35rem;
+  }
+}
