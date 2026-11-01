@@ -89,6 +89,50 @@ const [savingProject, setSavingProject] = useState(false);
     );
   }
 
+  async function handleCreateProject(e) {
+  e.preventDefault();
+
+  const description = projectDescription.trim();
+
+  if (!description) {
+    setProjectsError("La description du projet est obligatoire.");
+    return;
+  }
+
+  const suggestedName = projectName.trim() ||
+    description.split(/\s+/).slice(0, 5).join(" ");
+
+  const type =
+    active === "API" ? "api" :
+    active === "Agents IA" ? "agent" :
+    active === "Applications" ? "application" :
+    projectType;
+
+  try {
+    setSavingProject(true);
+    setProjectsError("");
+
+    const createdProject = await createProject({
+      name: suggestedName,
+      description,
+      type
+    });
+
+    setProjects(previous => [createdProject, ...previous]);
+
+    setProjectName("");
+    setProjectDescription("");
+    setShowCreateForm(false);
+    setNotice("Projet créé avec succès.");
+
+  } catch (error) {
+    setProjectsError(
+      error.message || "Impossible de créer le projet."
+    );
+  } finally {
+    setSavingProject(false);
+  }
+  
   const isChat = active === "Chat IA";
 
   const displayedProjects = active === "API"
