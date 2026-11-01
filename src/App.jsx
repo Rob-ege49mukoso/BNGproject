@@ -1,5 +1,4 @@
 
-
 import { useEffect, useState } from "react";
 import {
   Activity, Bot, ChevronRight, Code2, Command, FolderKanban,
@@ -325,8 +324,8 @@ export default function App({ onSignOut }) {
                               ? "API"
                               : project.type === "agent"
                                 ? "Agents IA"
-                                : "Mes projets"
-                          )}>
+                                : "Applications"
+                          )}
                           <span className={`project-icon project-${project.type === "api" ? "blue" : project.type === "agent" ? "teal" : "violet"}`}>
                             <Icon size={22} />
                           </span>
