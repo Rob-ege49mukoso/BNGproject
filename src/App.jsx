@@ -517,6 +517,74 @@ const [savingProject, setSavingProject] = useState(false);
         ))}
       </div>
     )}
+         </section>
+) : active === "Mes projets" ? (
+  <section className="workspace-dashboard">
+    <div className="eyebrow">
+      <FolderKanban size={16} /> ESPACE PROJETS
+    </div>
+
+    <h1>Tous tes <span>projets</span></h1>
+
+    <p className="welcome-description">
+      Retrouve et organise toutes tes créations au même endroit.
+    </p>
+
+    <button
+      className="primary-button"
+      onClick={() => setShowCreateForm(true)}
+    >
+      <Plus size={18} /> Nouveau projet
+    </button>
+
+    <section className="section-heading">
+      <div>
+        <h2>Mes créations</h2>
+        <p>{projects.length} projet(s) enregistré(s).</p>
+      </div>
+    </section>
+
+    {projectsError && (
+      <p className="error-message">{projectsError}</p>
+    )}
+
+    {loadingProjects ? (
+      <p>Chargement des projets...</p>
+    ) : projects.length === 0 ? (
+      <p>Aucun projet pour le moment. Commence par en créer un !</p>
+    ) : (
+      <div className="projects-grid">
+        {projects.map(project => {
+          const Icon = project.type === "api"
+            ? Code2
+            : project.type === "agent"
+              ? Bot
+              : Activity;
+
+          const typeLabel = project.type === "api"
+            ? "API"
+            : project.type === "agent"
+              ? "Agent IA"
+              : "Application";
+
+          return (
+            <article className="project-card" key={project.id}>
+              <Icon size={22} />
+              <h3>{project.name}</h3>
+              <p>{project.description}</p>
+              <span>{typeLabel}</span>
+
+              <button
+                type="button"
+                onClick={() => handleDeleteProject(project)}
+              >
+                Supprimer
+              </button>
+            </article>
+          );
+        })}
+      </div>
+    )}
   </section>
 ) : (
   <>
