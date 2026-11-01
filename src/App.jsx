@@ -369,9 +369,58 @@ const [savingProject, setSavingProject] = useState(false);
                 </p>
               </div>
             </section>
-          ) : (
-            <>
-              <section className="welcome-row">
+            ) : active === "API" ? (
+  <section className="workspace-dashboard">
+    <div className="eyebrow">
+      <Code2 size={16} /> ESPACE API
+    </div>
+
+    <h1>Gestion de tes <span>API</span></h1>
+    <p className="welcome-description">
+      Crée, configure et gère tes interfaces de programmation.
+    </p>
+
+    <button
+      className="primary-button"
+      onClick={() => setShowCreateForm(true)}
+    >
+      <Plus size={18} /> Créer une API
+    </button>
+
+    <section className="section-heading">
+      <div>
+        <h2>Mes API</h2>
+        <p>Gère les API enregistrées dans ton espace.</p>
+      </div>
+    </section>
+
+    {loadingProjects ? (
+      <p>Chargement...</p>
+    ) : apiProjects.length === 0 ? (
+      <p>Aucune API créée pour le moment.</p>
+    ) : (
+      <div className="projects-grid">
+        {apiProjects.map(project => (
+          <article className="project-card" key={project.id}>
+            <Code2 size={22} />
+            <h3>{project.name}</h3>
+            <p>{project.description}</p>
+            <span>{project.status || "Brouillon"}</span>
+
+            <button
+              type="button"
+              onClick={() => handleDeleteProject(project)}
+            >
+              Supprimer
+            </button>
+          </article>
+        ))}
+      </div>
+    )}
+  </section>
+) : (
+  <>
+    <section className="welcome-row">
                 <div>
                   <div className="eyebrow"><Sparkles size={15} /> TON ESPACE DE CRÉATION</div>
                   <h1>Imagine. Construis. <span>Déploie.</span></h1>
