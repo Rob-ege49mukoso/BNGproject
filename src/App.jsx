@@ -30,6 +30,12 @@ export default function App({ onSignOut }) {
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [projectsError, setProjectsError] = useState("");
 
+  // Formulaire de création de projet
+const [showCreateForm, setShowCreateForm] = useState(false);
+const [projectName, setProjectName] = useState("");
+const [projectDescription, setProjectDescription] = useState("");
+const [projectType, setProjectType] = useState("api");
+const [savingProject, setSavingProject] = useState(false);
   useEffect(() => {
     let activeRequest = true;
 
