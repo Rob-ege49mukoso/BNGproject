@@ -114,7 +114,18 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
     active === "Applications" ? "application" :
     projectType;
 
-  try {
+         let parsedResponseJson = {};
+
+  if (type === "api" && apiResponseJson.trim()) {
+    try {
+      parsedResponseJson = JSON.parse(apiResponseJson);
+    } catch {
+      setProjectsError("La réponse JSON est invalide. Vérifie sa syntaxe.");
+      return;
+    }
+  }
+    
+    try {
     setSavingProject(true);
     setProjectsError("");
 
