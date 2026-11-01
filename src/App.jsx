@@ -5,8 +5,11 @@ import {
   LayoutDashboard, LogOut, Menu, MessageSquare, Moon, Plus, Send,
   Settings2, Sparkles, Sun, X
 } from "lucide-react";
-import { getProjects, createProject } from "./lib/projectStorage.js";
-import "./app.css";
+import {
+  getProjects,
+  createProject,
+  deleteProject
+} from "./lib/projectStorage.js";
 
 const navItems = [
   { label: "Vue d'ensemble", icon: LayoutDashboard },
