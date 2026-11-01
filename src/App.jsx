@@ -352,9 +352,12 @@ const [savingProject, setSavingProject] = useState(false);
                   </p>
                 </div>
                 <button className="primary-button"
-                  onClick={() => setActive("Mes projets")}>
-                  <Plus size={18} /> Nouveau projet
-                </button>
+                  onClick={() => {
+                    setActive("Mes projets");
+                     setShowCreateForm(true);
+                    }}>
+                   <Plus size={18} /> Nouveau projet
+                 </button>
               </section>
 
               <section className="hero-panel">
