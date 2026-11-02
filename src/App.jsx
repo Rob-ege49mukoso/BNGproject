@@ -519,10 +519,14 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
                     aria-label="Message à l'assistant"
                     rows={2}
                   />
-                  <button className="send-button" type="submit"
-                    aria-label="Envoyer le message">
-                    <Send size={19} />
-                  </button>
+                   <button
+  className="send-button"
+  type="submit"
+  aria-label="Envoyer le message"
+  disabled={sendingMessage || !prompt.trim()}
+>
+  {sendingMessage ? "…" : <Send size={19} />}
+</button>
                 </form>
                 <p className="chat-disclaimer">
                   Le véritable moteur IA sera connecté à l'étape backend.
