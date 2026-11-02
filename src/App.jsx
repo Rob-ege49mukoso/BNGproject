@@ -11,6 +11,7 @@ import {
   deleteProject
 } from "./lib/projectStorage.js";
  import "./app.css";
+ import { supabase } from "./lib/supabase.js";
 
 const navItems = [
   { label: "Vue d'ensemble", icon: LayoutDashboard },
@@ -28,7 +29,22 @@ export default function App({ onSignOut }) {
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState([]);
   const [notice, setNotice] = useState("");
-
+  const [chatProvider, setChatProvider] = useState("groq");
+  const [chatModel, setChatModel] = useState("llama-3.3-70b-versatile");
+  const [sendingMessage, setSendingMessage] = useState(false);
+ const modelsByProvider = {
+  groq: [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant"
+  ],
+  gemini: [
+    "gemini-2.5-flash",
+    "gemini-2.5-pro"
+  ],
+  openrouter: [
+    "openrouter/auto"
+  ]
+};
   // Données réelles des projets
   const [projects, setProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
