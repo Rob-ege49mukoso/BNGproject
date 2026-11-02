@@ -439,7 +439,7 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
                 <div className="chat-header">
                   <span className="chat-avatar"><Bot size={24} /></span>
                   <div><strong>Assistant Elema</strong>
-                    <small>Chat IA · Connexion à configurer</small></div>
+                     <small>Chat IA · Connecté au moteur IA</small></div>
                 </div>
                 <div className="chat-model-controls">
   <label>
