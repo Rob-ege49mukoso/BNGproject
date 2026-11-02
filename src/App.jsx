@@ -441,6 +441,39 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
                   <div><strong>Assistant Elema</strong>
                     <small>Chat IA · Connexion à configurer</small></div>
                 </div>
+                <div className="chat-model-controls">
+  <label>
+    Fournisseur IA
+    <select
+      value={chatProvider}
+      disabled={sendingMessage}
+      onChange={e => {
+        const provider = e.target.value;
+        setChatProvider(provider);
+        setChatModel(modelsByProvider[provider][0]);
+      }}
+    >
+      <option value="groq">Groq</option>
+      <option value="gemini">Google Gemini</option>
+      <option value="openrouter">OpenRouter</option>
+    </select>
+  </label>
+
+  <label>
+    Modèle IA
+    <select
+      value={chatModel}
+      disabled={sendingMessage}
+      onChange={e => setChatModel(e.target.value)}
+    >
+      {modelsByProvider[chatProvider].map(model => (
+        <option key={model} value={model}>
+          {model}
+        </option>
+      ))}
+    </select>
+  </label>
+</div>
                 <div className="chat-messages">
                   {messages.length === 0 ? (
                     <div className="chat-empty">
