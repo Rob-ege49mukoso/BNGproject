@@ -489,11 +489,24 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
                         ))}
                       </div>
                     </div>
-                  ) : messages.map((message, index) => (
-                    <div className="message-user" key={index}>
-                      <span>Toi</span><p>{message.content}</p>
-                    </div>
-                  ))}
+                   ) : messages.map((message, index) => (
+  <div
+    className={
+      message.role === "assistant"
+        ? "message-assistant"
+        : "message-user"
+    }
+    key={index}
+  >
+    <span>
+      {message.role === "assistant" ? "Elema IA" : "Toi"}
+    </span>
+    <p>{message.content}</p>
+    {message.provider && (
+      <small>{message.provider} · {message.model}</small>
+    )}
+  </div>
+))}
                   {notice && <p className="chat-notice">{notice}</p>}
                 </div>
                 <form className="chat-composer" onSubmit={e => {
