@@ -529,7 +529,7 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
 </button>
                 </form>
                 <p className="chat-disclaimer">
-                  Le véritable moteur IA sera connecté à l'étape backend.
+                   Elema IA utilise ses fournisseurs de modèles connectés.
                 </p>
               </div>
             </section>
