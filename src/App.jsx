@@ -98,18 +98,65 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
     project => project.type === "application"
   );
 
-  function sendMessage() {
-    const text = prompt.trim();
-    if (!text) return;
+  async function sendMessage() {
+  const text = prompt.trim();
+  if (!text || sendingMessage) return;
+
+  setMessages(previous => [
+    ...previous,
+    { role: "user", content: text }
+  ]);
+
+  setPrompt("");
+  setNotice("");
+  setSendingMessage(true);
+
+  try {
+    const { data, error } = await supabase.functions.invoke(
+      "ai-gateway",
+      {
+        body: {
+          prompt: text,
+          provider: chatProvider,
+          model: chatModel
+        }
+      }
+    );
+
+    if (error) {
+      throw new Error(error.message || "Erreur du service IA.");
+    }
+
+    if (!data?.success || typeof data.answer !== "string") {
+      throw new Error(data?.error || "Réponse IA invalide.");
+    }
 
     setMessages(previous => [
       ...previous,
-      { role: "user", content: text }
+      {
+        role: "assistant",
+        content: data.answer,
+        provider: data.provider,
+        model: data.model
+      }
     ]);
-    setPrompt("");
+
     setNotice(
-      "Ton message est prêt. La connexion au fournisseur IA sera configurée dans l'étape backend."
+      `Modèle : ${data.model} · Requêtes restantes : ${data.quota?.remaining ?? "inconnues"}`
     );
+
+  } catch (error) {
+    setMessages(previous => [
+      ...previous,
+      {
+        role: "assistant",
+        content: `Erreur : ${error.message}`,
+        isError: true
+      }
+    ]);
+  } finally {
+    setSendingMessage(false);
+  }
   }
 
   async function handleCreateProject(e) {
