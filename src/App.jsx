@@ -430,8 +430,45 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
     </form>
   </section>
 )}
-          {isChat ? (
-            <section className="chat-page">
+          {isSettings ? (
+  <section className="workspace-dashboard">
+    <div className="eyebrow">
+      <Settings2 size={16} /> CONFIGURATION
+    </div>
+
+    <h1>Paramètres <span>Elema</span></h1>
+    <p className="welcome-description">
+      Personnalise ton espace de travail.
+    </p>
+
+    <div className="settings-panel">
+      <h2>Apparence</h2>
+      <p>Choisis le thème de ton interface.</p>
+
+      <div className="settings-actions">
+        <button onClick={() => setTheme("dark")}>
+          <Moon size={17} /> Mode sombre
+        </button>
+
+        <button onClick={() => setTheme("light")}>
+          <Sun size={17} /> Mode clair
+        </button>
+      </div>
+    </div>
+
+    <div className="settings-panel">
+      <h2>Compte</h2>
+      <p>Gère ta session Elema.</p>
+
+      <button
+        className="secondary-button"
+        onClick={onSignOut}
+      >
+        <LogOut size={17} /> Se déconnecter
+      </button>
+    </div>
+  </section>
+) : isChat ? (  
               <div className="eyebrow"><Sparkles size={15} /> ELEMA INTELLIGENCE</div>
               <h1>Ton idée. <span>Son potentiel.</span></h1>
               <p className="welcome-description">
