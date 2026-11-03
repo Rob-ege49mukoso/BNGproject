@@ -25,6 +25,7 @@ const navItems = [
 export default function App({ onSignOut }) {
   const [theme, setTheme] = useState("dark");
   const [active, setActive] = useState("Vue d'ensemble");
+  const [settingsTab, setSettingsTab] = useState("general");
   const [menuOpen, setMenuOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState([]);
@@ -245,6 +246,8 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
   }
   
   const isChat = active === "Chat IA";
+
+  const isSettings = active === "Paramètres";
 
   const displayedProjects = active === "API"
     ? apiProjects
