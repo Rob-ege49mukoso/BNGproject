@@ -112,9 +112,35 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
   setNotice("");
   setSendingMessage(true);
 
-  try {
+    try {
+    // Vérifier la session Supabase
+    const {
+      data: { session },
+      error: sessionError
+    } = await supabase.auth.getSession();
+
+    if (sessionError) {
+      throw new Error(sessionError.message);
+    }
+
+    if (!session?.access_token) {
+      throw new Error(
+        "Aucune session Supabase active. Reconnecte-toi."
+      );
+    }
+
+    // Appeler le moteur IA
     const { data, error } = await supabase.functions.invoke(
       "ai-gateway",
+      {
+        body: {
+          prompt: text,
+          provider: chatProvider,
+          model: chatModel
+        }
+      }
+    );
+   "ai-gateway",
       {
         body: {
           prompt: text,
