@@ -573,7 +573,6 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
                    Elema IA utilise ses fournisseurs de modèles connectés.
                 </p>
               </div>
-             </div>
 </section>
 ) : active === "API" ? (
   <section className="workspace-dashboard">
