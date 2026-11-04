@@ -468,7 +468,8 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
       </button>
     </div>
   </section>
-) : isChat ? (  
+  ) : isChat ? (
+  <section className="workspace-dashboard">  
               <div className="eyebrow"><Sparkles size={15} /> ELEMA INTELLIGENCE</div>
               <h1>Ton idée. <span>Son potentiel.</span></h1>
               <p className="welcome-description">
@@ -572,8 +573,9 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
                    Elema IA utilise ses fournisseurs de modèles connectés.
                 </p>
               </div>
-            </section>
-            ) : active === "API" ? (
+             </div>
+</section>
+) : active === "API" ? (
   <section className="workspace-dashboard">
     <div className="eyebrow">
       <Code2 size={16} /> ESPACE API
