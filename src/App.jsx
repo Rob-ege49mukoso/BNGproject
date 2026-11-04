@@ -163,19 +163,42 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
     setNotice(
       `Modèle : ${data.model} · Requêtes restantes : ${data.quota?.remaining ?? "inconnues"}`
     );
+      } catch (error) {
+    let errorMessage =
+      error?.message || "Erreur inconnue du service IA.";
 
-  } catch (error) {
+    // Lire les détails de la réponse HTTP de Supabase
+    if (error?.context && typeof error.context.clone === "function") {
+      try {
+        const details = await error.context.clone().json();
+
+        const parts = [
+          details?.error,
+          details?.provider_status
+            ? `Statut fournisseur : ${details.provider_status}`
+            : null,
+          details?.details
+        ].filter(Boolean);
+
+        if (parts.length > 0) {
+          errorMessage = parts.join(" — ");
+        }
+      } catch {
+        // Conserver le message initial si la réponse n'est pas JSON.
+      }
+    }
+
     setMessages(previous => [
       ...previous,
       {
         role: "assistant",
-        content: `Erreur : ${error.message}`,
+        content: `Erreur : ${errorMessage}`,
         isError: true
       }
     ]);
   } finally {
     setSendingMessage(false);
-  }
+    }
   }
 
   async function handleCreateProject(e) {
