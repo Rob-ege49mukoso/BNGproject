@@ -140,15 +140,7 @@ const [apiResponseJson, setApiResponseJson] = useState("{}");
         }
       }
     );
-   "ai-gateway",
-      {
-        body: {
-          prompt: text,
-          provider: chatProvider,
-          model: chatModel
-        }
-      }
-    );
+   
 
     if (error) {
       throw new Error(error.message || "Erreur du service IA.");
