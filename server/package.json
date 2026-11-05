@@ -1,0 +1,22 @@
+
+{
+  "name": "elema-api-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend Node.js de la plateforme Elema API",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "better-auth": "^1.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "pg": "^8.16.3"
+  }
+}
