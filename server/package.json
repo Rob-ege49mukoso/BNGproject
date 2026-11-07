@@ -7,7 +7,7 @@
   "description": "Backend Node.js de la plateforme Elema API",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
     "auth:check": "npx auth@latest check schema --config ./src/auth.js",
 "auth:generate": "npx auth@latest generate --config ./src/auth.js --output ./better-auth-schema.sql"
   },
