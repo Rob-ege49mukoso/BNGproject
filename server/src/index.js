@@ -58,6 +58,23 @@ app.use((_req, res) => {
 async function startServer() {
   try {
     await checkDatabaseConnection();
+    const diagnostic = await pool.query(`
+  SELECT
+    current_database() AS database_name,
+    current_user AS database_user,
+    current_schema() AS current_schema,
+    current_setting('search_path') AS search_path,
+    current_schemas(true) AS active_schemas,
+    to_regclass('public.user') IS NOT NULL AS public_user_exists,
+    to_regclass('public.session') IS NOT NULL AS public_session_exists,
+    to_regclass('public.account') IS NOT NULL AS public_account_exists,
+    to_regclass('public.verification') IS NOT NULL AS public_verification_exists
+`);
+
+console.log(
+  "TEMPORARY_DATABASE_DIAGNOSTIC",
+  JSON.stringify(diagnostic.rows[0])
+);
 
     console.log("Neon PostgreSQL connection verified.");
 
