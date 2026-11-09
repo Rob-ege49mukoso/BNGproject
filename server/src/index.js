@@ -8,6 +8,7 @@ import {
   checkDatabaseConnection,
   pool,
 } from "./db.js";
+import { sendEmail } from "./sendliberty.js";
 
 const app = express();
 
