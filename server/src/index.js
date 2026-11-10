@@ -8,7 +8,6 @@ import {
   checkDatabaseConnection,
   pool,
 } from "./db.js";
-import { sendEmail } from "./sendliberty.js";
 
 const app = express();
 
@@ -27,41 +26,6 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 
 // Les autres routes peuvent utiliser JSON
 app.use(express.json({ limit: "1mb" }));
-
-app.post("/internal/email-test", async (req, res) => {
-  const testToken = process.env.EMAIL_TEST_TOKEN;
-
-  if (
-    !testToken ||
-    req.get("authorization") !== `Bearer ${testToken}`
-  ) {
-    return res.status(401).json({
-      error: "Unauthorized",
-    });
-  }
-
-  try {
-    const result = await sendEmail({
-      to: "vickydash140@gmail.com",
-      subject: "Test technique — Elema API",
-      html: "<p>Bonjour, ceci est un test technique de l'envoi d'e-mails d'Elema API.</p>",
-      text: "Bonjour, ceci est un test technique de l'envoi d'e-mails d'Elema API.",
-    });
-
-    return res.status(200).json({
-      success: true,
-      provider: "Sendliberty",
-      result,
-    });
-  } catch (error) {
-    console.error("Email test failed:", error.message);
-
-    return res.status(502).json({
-      success: false,
-      error: "Email provider request failed.",
-    });
-  }
-});
 
 app.get("/health", async (_req, res) => {
   try {
