@@ -1,0 +1,9 @@
+
+{
+  "rewrites": [
+    {
+      "source": "/api/auth/:path*",
+      "destination": "https://bngproject.onrender.com/api/auth/:path*"
+    }
+  ]
+}
