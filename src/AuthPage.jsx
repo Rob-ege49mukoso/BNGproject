@@ -9,13 +9,14 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { supabase } from "./lib/supabase";
+import { authClient } from "./lib/auth-client";
 import "./auth.css";
 
 export default function AuthPage() {
   const [mode, setMode] = useState("login");
   const [method, setMethod] = useState("email");
   const [identifier, setIdentifier] = useState("");
+  const [fullName, setFullName] = useState("");
   const [recoveryEmail, setRecoveryEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
