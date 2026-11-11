@@ -26,6 +26,17 @@ export const auth = betterAuth({
 
   trustedOrigins: [process.env.CLIENT_ORIGIN],
 
+plugins: [
+  username({
+    minUsernameLength: 9,
+    maxUsernameLength: 16,
+    usernameNormalization: false,
+    usernameValidator: (value) =>
+      /^\+[1-9]\d{7,14}$/.test(value),
+    displayUsername: false,
+  }),
+],
+
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
