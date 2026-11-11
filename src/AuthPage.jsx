@@ -142,32 +142,38 @@ const handleAuth = async (event) => {
     }
   };
 
-  const handleReset = async (event) => {
-    event.preventDefault();
-    resetMessages();
+  
+const handleReset = async (event) => {
+  event.preventDefault();
+  resetMessages();
 
-    if (!validEmail(identifier)) {
-      setError(
-        "Entre l'adresse e-mail associée à ton compte pour recevoir le lien de récupération."
-      );
-      return;
-    }
+  if (!validEmail(identifier)) {
+    setError(
+      "Entre l'adresse e-mail associée à ton compte pour recevoir le lien de récupération."
+    );
+    return;
+  }
 
-    setBusy(true);
+  setBusy(true);
 
-    try {
-      const { error } =
-        await supabase.auth.resetPasswordForEmail(identifier.trim());
+  try {
+    const { error } = await authClient.requestPasswordReset({
+      email: identifier.trim(),
+      redirectTo: window.location.origin,
+    });
 
-      if (error) throw error;
+    if (error) throw error;
 
-      setNotice("Un lien de récupération a été envoyé à ton adresse e-mail.");
-    } catch (err) {
-      setError(err.message || "Impossible d'envoyer le lien.");
-    } finally {
-      setBusy(false);
-    }
-  };
+    setNotice(
+      "Si un compte correspond à cette adresse, un lien de récupération sera envoyé."
+    );
+  } catch (err) {
+    setError(err.message || "Impossible d'envoyer le lien.");
+  } finally {
+    setBusy(false);
+  }
+};
+
 
   const changeMode = (nextMode) => {
     setMode(nextMode);
