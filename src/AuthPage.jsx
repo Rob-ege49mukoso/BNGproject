@@ -35,69 +35,94 @@ export default function AuthPage() {
   const validPhone = (value) =>
     /^\+?[0-9\s()-]{8,20}$/.test(value);
 
-  const handleAuth = async (event) => {
-    event.preventDefault();
-    resetMessages();
+ 
+const handleAuth = async (event) => {
+  event.preventDefault();
+  resetMessages();
 
-    if (!identifier.trim()) {
-      setError("Entre ton adresse e-mail ou ton numéro.");
-      return;
-    }
+  if (mode === "signup" && !fullName.trim()) {
+    setError("Entre ton nom complet.");
+    return;
+  }
 
-    if (method === "email" && !validEmail(identifier)) {
-      setError("Adresse e-mail invalide.");
-      return;
-    }
+  if (!identifier.trim()) {
+    setError("Entre ton adresse e-mail ou ton numéro.");
+    return;
+  }
 
-    if (method === "phone" && !validPhone(identifier)) {
-      setError("Numéro de téléphone invalide. Utilise l'indicatif international.");
-      return;
-    }
+  const phone = identifier.replace(/[\s()-]/g, "");
 
-    if (password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères.");
-      return;
-    }
+  if (method === "email" && !validEmail(identifier)) {
+    setError("Adresse e-mail invalide.");
+    return;
+  }
 
-    if (mode === "signup" && method === "phone") {
-      if (!validEmail(recoveryEmail)) {
-        setError("Entre une adresse e-mail valide pour la récupération.");
-        return;
+  if (method === "phone" && !/^\+[1-9]\d{7,14}$/.test(phone)) {
+    setError("Utilise le format international, par exemple +243...");
+    return;
+  }
+
+  if (password.length < 8) {
+    setError("Le mot de passe doit contenir au moins 8 caractères.");
+    return;
+  }
+
+  if (mode === "signup" && method === "phone" && !validEmail(recoveryEmail)) {
+    setError("Entre une adresse e-mail valide pour la récupération.");
+    return;
+  }
+
+  setBusy(true);
+
+  try {
+    let result;
+
+    if (mode === "signup") {
+      const email =
+        method === "email" ? identifier.trim() : recoveryEmail.trim();
+
+      const credentials = {
+        name: fullName.trim(),
+        email,
+        password,
+        callbackURL: window.location.origin,
+      };
+
+      if (method === "phone") {
+        credentials.username = phone;
       }
-    }
 
-    setBusy(true);
+      result = await authClient.signUp.email(credentials);
 
-    try {
-      let result;
+      if (result.error) throw result.error;
 
-      if (mode === "signup") {
-        const credentials = {
+      setNotice(
+        "Inscription envoyée. Vérifie ta boîte e-mail pour confirmer ton compte."
+      );
+    } else {
+      if (method === "email") {
+        result = await authClient.signIn.email({
+          email: identifier.trim(),
           password,
-          options: {
-            data: {
-              recovery_email:
-                method === "phone" ? recoveryEmail.trim() : identifier.trim(),
-              login_method: method,
-            },
-          },
-        };
+        });
+      } else {
+        result = await authClient.signIn.username({
+          username: phone,
+          password,
+        });
+      }
 
-        if (method === "email") {
-          credentials.email = identifier.trim();
-        } else {
-          credentials.phone = identifier.replace(/\s/g, "");
-        }
+      if (result.error) throw result.error;
 
-        result = await supabase.auth.signUp(credentials);
-
-        if (result.error) throw result.error;
-
-        setNotice(
-          method === "email"
-            ? "Compte créé. Vérifie ton adresse e-mail pour confirmer ton inscription."
-            : "Inscription envoyée. La vérification du numéro doit être configurée."
-        );
+      setNotice("Connexion réussie.");
+    }
+  } catch (err) {
+    setError(err.message || "Une erreur est survenue.");
+  } finally {
+    setBusy(false);
+  }
+};
+  
       } else {
         const credentials = {
           password,
