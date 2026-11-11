@@ -263,8 +263,24 @@ const handleAuth = async (event) => {
             </div>
 
             <form onSubmit={handleAuth}>
+              
+{mode === "signup" && (
+  <>
+    <label>Nom complet</label>
+    <div className="auth-input">
+      <input
+        type="text"
+        value={fullName}
+        onChange={(e) => setFullName(e.target.value)}
+        placeholder="Ton nom complet"
+        required
+      />
+    </div>
+  </>
+)}
+              
               <label>
-                {method === "email" ? "Adresse e-mail" : "Numéro de téléphone"}
+             {method === "email" ? "Adresse e-mail" : "Numéro de téléphone"}
               </label>
 
               <div className="auth-input">
