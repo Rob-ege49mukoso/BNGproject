@@ -3,6 +3,7 @@ import "dotenv/config";
 import { betterAuth } from "better-auth";
 import { pool } from "./db.js";
 import { sendEmail } from "./sendliberty.js";
+import { username } from "better-auth/plugins";
 
 if (!process.env.BETTER_AUTH_SECRET) {
   throw new Error("BETTER_AUTH_SECRET is required.");
