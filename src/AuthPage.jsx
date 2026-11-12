@@ -213,9 +213,70 @@ const [confirmPassword, setConfirmPassword] = useState("");
           <p>Build. Create. Automate.</p>
         </div>
 
-        {mode === "reset" ? (
-          <>
-            <button
+        {mode === "new-password" ? (
+  <>
+    <button
+      type="button"
+      className="auth-back"
+      onClick={() => {
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+        setMode("login");
+        resetMessages();
+      }}
+    >
+      <ArrowLeft size={17} />
+      Retour à la connexion
+    </button>
+
+    <h2>Nouveau mot de passe</h2>
+
+    <p className="auth-description">
+      Choisis un nouveau mot de passe pour sécuriser ton compte.
+    </p>
+
+    <form onSubmit={handleNewPassword}>
+      <label>Nouveau mot de passe</label>
+
+      <div className="auth-input">
+        <ShieldCheck size={18} />
+        <input
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          placeholder="Au moins 8 caractères"
+          minLength={8}
+          required
+        />
+      </div>
+
+      <label>Confirmer le mot de passe</label>
+
+      <div className="auth-input">
+        <ShieldCheck size={18} />
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Répète ton mot de passe"
+          minLength={8}
+          required
+        />
+      </div>
+
+      {error && <p className="auth-error">{error}</p>}
+
+      <button className="auth-submit" disabled={busy || !resetToken}>
+        {busy ? "Modification..." : "Enregistrer le nouveau mot de passe"}
+      </button>
+    </form>
+  </>
+) : mode === "reset" ? (
+      <>
+      <button
               type="button"
               className="auth-back"
               onClick={() => changeMode("login")}
