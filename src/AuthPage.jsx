@@ -193,6 +193,60 @@ const [confirmPassword, setConfirmPassword] = useState("");
     }
   };
 
+const handleNewPassword = async (event) => {
+  event.preventDefault();
+  resetMessages();
+
+  if (!resetToken) {
+    setError("Lien de récupération invalide ou expiré.");
+    return;
+  }
+
+  if (newPassword.length < 8) {
+    setError("Le nouveau mot de passe doit contenir au moins 8 caractères.");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    setError("Les deux mots de passe ne correspondent pas.");
+    return;
+  }
+
+  setBusy(true);
+
+  try {
+    const { error } = await authClient.resetPassword({
+      newPassword,
+      token: resetToken,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
+
+    setPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setMode("login");
+
+    setNotice(
+      "Ton mot de passe a été modifié. Tu peux maintenant te connecter."
+    );
+  } catch (err) {
+    setError(
+      err.message || "Impossible de modifier le mot de passe."
+    );
+  } finally {
+    setBusy(false);
+  }
+};
+
   const changeMode = (nextMode) => {
     setMode(nextMode);
     resetMessages();
