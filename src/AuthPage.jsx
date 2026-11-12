@@ -32,148 +32,149 @@ export default function AuthPage() {
   const validEmail = (value) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-  const validPhone = (value) =>
-    /^\+?[0-9\s()-]{8,20}$/.test(value);
+  const handleAuth = async (event) => {
+    event.preventDefault();
+    resetMessages();
 
- 
-const handleAuth = async (event) => {
-  event.preventDefault();
-  resetMessages();
-
-  if (mode === "signup" && !fullName.trim()) {
-    setError("Entre ton nom complet.");
-    return;
-  }
-
-  if (!identifier.trim()) {
-    setError("Entre ton adresse e-mail ou ton numéro.");
-    return;
-  }
-
-  const phone = identifier.replace(/[\s()-]/g, "");
-
-  if (method === "email" && !validEmail(identifier)) {
-    setError("Adresse e-mail invalide.");
-    return;
-  }
-
-  if (method === "phone" && !/^\+[1-9]\d{7,14}$/.test(phone)) {
-    setError("Utilise le format international, par exemple +243...");
-    return;
-  }
-
-  if (password.length < 8) {
-    setError("Le mot de passe doit contenir au moins 8 caractères.");
-    return;
-  }
-
-  if (mode === "signup" && method === "phone" && !validEmail(recoveryEmail)) {
-    setError("Entre une adresse e-mail valide pour la récupération.");
-    return;
-  }
-
-  setBusy(true);
-
-  try {
-    let result;
-
-    if (mode === "signup") {
-      const email =
-        method === "email" ? identifier.trim() : recoveryEmail.trim();
-
-      const credentials = {
-        name: fullName.trim(),
-        email,
-        password,
-        callbackURL: window.location.origin,
-      };
-
-      if (method === "phone") {
-        credentials.username = phone;
-      }
-
-      result = await authClient.signUp.email(credentials);
-
-      if (result.error) throw result.error;
-
-      setNotice(
-        "Inscription envoyée. Vérifie ta boîte e-mail pour confirmer ton compte."
-      );
-    } else {
-      if (method === "email") {
-        result = await authClient.signIn.email({
-          email: identifier.trim(),
-          password,
-        });
-      } else {
-        result = await authClient.signIn.username({
-          username: phone,
-          password,
-        });
-      }
-
-      if (result.error) throw result.error;
-
-      setNotice("Connexion réussie.");
+    if (mode === "signup" && !fullName.trim()) {
+      setError("Entre ton nom complet.");
+      return;
     }
-  } catch (err) {
-    setError(err.message || "Une erreur est survenue.");
-  } finally {
-    setBusy(false);
-  }
-};
-  
-      } else {
+
+    if (!identifier.trim()) {
+      setError("Entre ton adresse e-mail ou ton numéro.");
+      return;
+    }
+
+    const phone = identifier.replace(/[\s()-]/g, "");
+
+    if (method === "email" && !validEmail(identifier.trim())) {
+      setError("Adresse e-mail invalide.");
+      return;
+    }
+
+    if (
+      method === "phone" &&
+      !/^\+[1-9]\d{7,14}$/.test(phone)
+    ) {
+      setError(
+        "Utilise le format international, par exemple +243..."
+      );
+      return;
+    }
+
+    if (password.length < 8) {
+      setError(
+        "Le mot de passe doit contenir au moins 8 caractères."
+      );
+      return;
+    }
+
+    if (
+      mode === "signup" &&
+      method === "phone" &&
+      !validEmail(recoveryEmail.trim())
+    ) {
+      setError(
+        "Entre une adresse e-mail valide pour la récupération."
+      );
+      return;
+    }
+
+    setBusy(true);
+
+    try {
+      let result;
+
+      if (mode === "signup") {
+        const email =
+          method === "email"
+            ? identifier.trim()
+            : recoveryEmail.trim();
+
         const credentials = {
+          name: fullName.trim(),
+          email,
           password,
-          [method]: identifier.trim(),
+          callbackURL: window.location.origin,
         };
 
-        result = await supabase.auth.signInWithPassword(credentials);
+        if (method === "phone") {
+          credentials.username = phone;
+        }
 
-        if (result.error) throw result.error;
+        result = await authClient.signUp.email(credentials);
+
+        if (result.error) {
+          throw new Error(result.error.message);
+        }
+
+        setNotice(
+          "Inscription envoyée. Vérifie ta boîte e-mail pour confirmer ton compte."
+        );
+      } else {
+        if (method === "email") {
+          result = await authClient.signIn.email({
+            email: identifier.trim(),
+            password,
+          });
+        } else {
+          result = await authClient.signIn.username({
+            username: phone,
+            password,
+          });
+        }
+
+        if (result.error) {
+          throw new Error(result.error.message);
+        }
 
         setNotice("Connexion réussie.");
       }
     } catch (err) {
-      setError(err.message || "Une erreur est survenue.");
+      setError(
+        err.message || "Une erreur est survenue."
+      );
     } finally {
       setBusy(false);
     }
   };
 
-  
-const handleReset = async (event) => {
-  event.preventDefault();
-  resetMessages();
+  const handleReset = async (event) => {
+    event.preventDefault();
+    resetMessages();
 
-  if (!validEmail(identifier)) {
-    setError(
-      "Entre l'adresse e-mail associée à ton compte pour recevoir le lien de récupération."
-    );
-    return;
-  }
+    if (!validEmail(identifier.trim())) {
+      setError(
+        "Entre l'adresse e-mail associée à ton compte pour recevoir le lien de récupération."
+      );
+      return;
+    }
 
-  setBusy(true);
+    setBusy(true);
 
-  try {
-    const { error } = await authClient.requestPasswordReset({
-      email: identifier.trim(),
-      redirectTo: window.location.origin,
-    });
+    try {
+      const { error } =
+        await authClient.requestPasswordReset({
+          email: identifier.trim(),
+          redirectTo: window.location.origin,
+        });
 
-    if (error) throw error;
+      if (error) {
+        throw new Error(error.message);
+      }
 
-    setNotice(
-      "Si un compte correspond à cette adresse, un lien de récupération sera envoyé."
-    );
-  } catch (err) {
-    setError(err.message || "Impossible d'envoyer le lien.");
-  } finally {
-    setBusy(false);
-  }
-};
-
+      setNotice(
+        "Si un compte correspond à cette adresse, un lien de récupération sera envoyé."
+      );
+    } catch (err) {
+      setError(
+        err.message || "Impossible d'envoyer le lien."
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const changeMode = (nextMode) => {
     setMode(nextMode);
@@ -207,27 +208,39 @@ const handleReset = async (event) => {
             </button>
 
             <h2>Récupérer ton compte</h2>
+
             <p className="auth-description">
               Entre ton adresse e-mail pour recevoir un lien de récupération.
             </p>
 
             <form onSubmit={handleReset}>
               <label>Adresse e-mail</label>
+
               <div className="auth-input">
                 <Mail size={18} />
                 <input
                   type="email"
                   value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
+                  onChange={(e) =>
+                    setIdentifier(e.target.value)
+                  }
                   placeholder="exemple@email.com"
                   required
                 />
               </div>
 
-              {error && <p className="auth-error">{error}</p>}
-              {notice && <p className="auth-notice">{notice}</p>}
+              {error && (
+                <p className="auth-error">{error}</p>
+              )}
 
-              <button className="auth-submit" disabled={busy}>
+              {notice && (
+                <p className="auth-notice">{notice}</p>
+              )}
+
+              <button
+                className="auth-submit"
+                disabled={busy}
+              >
                 {busy ? "Envoi..." : "Envoyer le lien"}
               </button>
             </form>
@@ -235,7 +248,9 @@ const handleReset = async (event) => {
         ) : (
           <>
             <h2>
-              {mode === "login" ? "Bienvenue" : "Créer un compte"}
+              {mode === "login"
+                ? "Bienvenue"
+                : "Créer un compte"}
             </h2>
 
             <p className="auth-description">
@@ -247,7 +262,9 @@ const handleReset = async (event) => {
             <div className="auth-tabs">
               <button
                 type="button"
-                className={method === "email" ? "active" : ""}
+                className={
+                  method === "email" ? "active" : ""
+                }
                 onClick={() => {
                   setMethod("email");
                   resetMessages();
@@ -258,7 +275,9 @@ const handleReset = async (event) => {
 
               <button
                 type="button"
-                className={method === "phone" ? "active" : ""}
+                className={
+                  method === "phone" ? "active" : ""
+                }
                 onClick={() => {
                   setMethod("phone");
                   resetMessages();
@@ -269,24 +288,28 @@ const handleReset = async (event) => {
             </div>
 
             <form onSubmit={handleAuth}>
-              
-{mode === "signup" && (
-  <>
-    <label>Nom complet</label>
-    <div className="auth-input">
-      <input
-        type="text"
-        value={fullName}
-        onChange={(e) => setFullName(e.target.value)}
-        placeholder="Ton nom complet"
-        required
-      />
-    </div>
-  </>
-)}
-              
+              {mode === "signup" && (
+                <>
+                  <label>Nom complet</label>
+
+                  <div className="auth-input">
+                    <input
+                      type="text"
+                      value={fullName}
+                      onChange={(e) =>
+                        setFullName(e.target.value)
+                      }
+                      placeholder="Ton nom complet"
+                      required
+                    />
+                  </div>
+                </>
+              )}
+
               <label>
-             {method === "email" ? "Adresse e-mail" : "Numéro de téléphone"}
+                {method === "email"
+                  ? "Adresse e-mail"
+                  : "Numéro de téléphone"}
               </label>
 
               <div className="auth-input">
@@ -299,7 +322,9 @@ const handleReset = async (event) => {
                 <input
                   type={method === "email" ? "email" : "tel"}
                   value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
+                  onChange={(e) =>
+                    setIdentifier(e.target.value)
+                  }
                   placeholder={
                     method === "email"
                       ? "exemple@email.com"
@@ -309,42 +334,58 @@ const handleReset = async (event) => {
                 />
               </div>
 
-              {mode === "signup" && method === "phone" && (
-                <>
-                  <label>E-mail de récupération</label>
-                  <div className="auth-input">
-                    <ShieldCheck size={18} />
-                    <input
-                      type="email"
-                      value={recoveryEmail}
-                      onChange={(e) => setRecoveryEmail(e.target.value)}
-                      placeholder="Adresse e-mail de secours"
-                      required
-                    />
-                  </div>
-                  <p className="auth-hint">
-                    Cette adresse sera enregistrée pour la récupération du compte.
-                  </p>
-                </>
-              )}
+              {mode === "signup" &&
+                method === "phone" && (
+                  <>
+                    <label>E-mail de récupération</label>
+
+                    <div className="auth-input">
+                      <ShieldCheck size={18} />
+                      <input
+                        type="email"
+                        value={recoveryEmail}
+                        onChange={(e) =>
+                          setRecoveryEmail(e.target.value)
+                        }
+                        placeholder="Adresse e-mail de secours"
+                        required
+                      />
+                    </div>
+
+                    <p className="auth-hint">
+                      Cette adresse sera enregistrée pour la récupération du compte.
+                    </p>
+                  </>
+                )}
 
               <label>Mot de passe</label>
+
               <div className="auth-input">
                 <ShieldCheck size={18} />
+
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Au moins 6 caractères"
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
+                  placeholder="Au moins 8 caractères"
                   required
                 />
+
                 <button
                   type="button"
                   className="auth-eye"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
                   aria-label="Afficher ou masquer le mot de passe"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
 
@@ -358,10 +399,18 @@ const handleReset = async (event) => {
                 </button>
               )}
 
-              {error && <p className="auth-error">{error}</p>}
-              {notice && <p className="auth-notice">{notice}</p>}
+              {error && (
+                <p className="auth-error">{error}</p>
+              )}
 
-              <button className="auth-submit" disabled={busy}>
+              {notice && (
+                <p className="auth-notice">{notice}</p>
+              )}
+
+              <button
+                className="auth-submit"
+                disabled={busy}
+              >
                 {busy
                   ? "Patiente..."
                   : mode === "login"
@@ -374,14 +423,20 @@ const handleReset = async (event) => {
               {mode === "login" ? (
                 <>
                   Pas encore de compte ?
-                  <button onClick={() => changeMode("signup")}>
+                  <button
+                    type="button"
+                    onClick={() => changeMode("signup")}
+                  >
                     S'inscrire
                   </button>
                 </>
               ) : (
                 <>
                   Déjà inscrit ?
-                  <button onClick={() => changeMode("login")}>
+                  <button
+                    type="button"
+                    onClick={() => changeMode("login")}
+                  >
                     Se connecter
                   </button>
                 </>
