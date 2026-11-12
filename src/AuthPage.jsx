@@ -13,7 +13,20 @@ import { authClient } from "./lib/auth-client";
 import "./auth.css";
 
 export default function AuthPage() {
-  const [mode, setMode] = useState("login");
+  const [mode, setMode] = useState(() => {
+  const params = new URLSearchParams(window.location.search);
+
+  return params.has("token") || params.has("error")
+    ? "new-password"
+    : "login";
+});
+
+const [resetToken] = useState(
+  () => new URLSearchParams(window.location.search).get("token") || ""
+);
+
+const [newPassword, setNewPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
   const [method, setMethod] = useState("email");
   const [identifier, setIdentifier] = useState("");
   const [fullName, setFullName] = useState("");
@@ -22,7 +35,11 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() =>
+  new URLSearchParams(window.location.search).has("error")
+    ? "Ce lien est invalide ou expiré. Demande un nouveau lien."
+    : ""
+);
 
   const resetMessages = () => {
     setNotice("");
