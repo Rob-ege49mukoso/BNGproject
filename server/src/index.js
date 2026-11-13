@@ -2,12 +2,13 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { toNodeHandler } from "better-auth/node";
+import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
 import { auth } from "./auth.js";
 import {
   checkDatabaseConnection,
   pool,
 } from "./db.js";
+import { createProjectsHandler } from "./projects.js";
 
 const app = express();
 
@@ -49,6 +50,18 @@ app.get("/health", async (_req, res) => {
   }
 });
 
+if (process.env.ENABLE_PROJECT_API === "true") {
+  app.use(
+    "/api/projects",
+    createProjectsHandler({
+      pool,
+      trustedOrigin: CLIENT_ORIGIN,
+      getSession: (req) =>
+        auth.api.getSession({ headers: fromNodeHeaders(req.headers) }),
+    })
+  );
+}
+
 app.use((_req, res) => {
   res.status(404).json({
     error: "Route not found",
@@ -58,24 +71,6 @@ app.use((_req, res) => {
 async function startServer() {
   try {
     await checkDatabaseConnection();
-    const diagnostic = await pool.query(`
-  SELECT
-    current_database() AS database_name,
-    current_user AS database_user,
-    current_schema() AS current_schema,
-    current_setting('search_path') AS search_path,
-    current_schemas(true) AS active_schemas,
-    to_regclass('public.user') IS NOT NULL AS public_user_exists,
-    to_regclass('public.session') IS NOT NULL AS public_session_exists,
-    to_regclass('public.account') IS NOT NULL AS public_account_exists,
-    to_regclass('public.verification') IS NOT NULL AS public_verification_exists
-`);
-
-console.log(
-  "TEMPORARY_DATABASE_DIAGNOSTIC",
-  JSON.stringify(diagnostic.rows[0])
-);
-
     console.log("Neon PostgreSQL connection verified.");
 
     app.listen(PORT, "0.0.0.0", () => {
